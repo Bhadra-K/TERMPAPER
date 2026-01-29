@@ -1,2 +1,2 @@
 # TERMPAPER
-ai travel translator
+BLUVO - ai travel translator
