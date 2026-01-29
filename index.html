@@ -1,0 +1,586 @@
+<!-- selected ui -->
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Travel Translator 🌏✈️</title>
+
+<style>
+:root {
+  --bg: #f0f8ff;        /* sky blue */
+  --card: #fff8f0;      /* soft cream */
+  --accent: #ff6f61;    /* coral */
+  --accent-hover: #ff4a3b;
+  --text: #333;
+  --muted: #555;
+  --border: #ffe6e0;
+  --highlight: #fff3e6;
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Floating cloud animation */
+.cloud {
+  position: absolute;
+  top: 20px;
+  width: 80px;
+  height: 50px;
+  background: #fff;
+  border-radius: 50%;
+  opacity: 0.7;
+  animation: float 25s linear infinite;
+}
+.cloud:nth-child(2) {
+  width: 100px; height: 60px; top: 80px; animation-duration: 35s;
+}
+.cloud:nth-child(3) {
+  width: 70px; height: 40px; top: 140px; animation-duration: 30s;
+}
+
+@keyframes float {
+  0% { transform: translateX(-150px); }
+  100% { transform: translateX(100vw); }
+}
+
+.container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 450px;
+  z-index: 1;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 28px 60px rgba(0,0,0,0.12);
+  background: var(--highlight);
+}
+
+h1 {
+  margin: 0;
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--accent);
+}
+
+.subtitle {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+textarea {
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+  height: 60px;         
+  box-sizing: border-box; 
+}
+
+textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 6px rgba(255,111,97,0.3);
+}
+
+select {
+  margin-top: 16px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  outline: none;
+  background: #fff;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 6px rgba(255,111,97,0.25);
+}
+
+button {
+  margin-top: 22px;
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  border: none;
+  border-radius: 14px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+button:hover {
+  background: var(--accent-hover);
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+#output {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 14px;
+  background: #fff3e6;
+  border: 1px solid var(--border);
+  min-height: 60px;
+  font-size: 14px;
+  color: var(--text);
+  transition: background 0.3s ease;
+}
+
+#output.translating {
+  background: #ffe6e0;
+  color: #d93f31;
+  font-style: italic;
+}
+
+/* Small emoji animation */
+.card h1::after {
+  content: " ✈️";
+  display: inline-block;
+  animation: bounce 1.5s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+</style>
+</head>
+
+<body>
+<div class="cloud"></div>
+<div class="cloud"></div>
+<div class="cloud"></div>
+
+<div class="container">
+  <div class="card">
+    <h1>Travel Translator</h1>
+    <div class="subtitle">Type, translate & explore 🌏</div>
+
+    <textarea id="inputText" placeholder="Write something to translate…"></textarea>
+
+    <select id="targetLang">
+      <option value="en">English</option>
+      <option value="hi">Hindi</option>
+      <option value="fr">French</option>
+    </select>
+
+    <button onclick="translateText()">Translate</button>
+
+    <div id="output">Your translated text will appear here ✨</div>
+  </div>
+</div>
+
+<script>
+async function translateText() {
+  const text = document.getElementById("inputText").value.trim();
+  const lang = document.getElementById("targetLang").value;
+  const output = document.getElementById("output");
+
+  if (!text) {
+    output.innerText = "Please enter some text!";
+    return;
+  }
+
+  output.classList.add("translating");
+  output.innerText = "Translating… 🛫";
+
+  try {
+    const res = await fetch("http://127.0.0.1:8000/translate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, target_lang: lang })
+    });
+
+    const data = await res.json();
+    output.classList.remove("translating");
+    output.innerText = data.translated_text + " 🌟";
+  } catch (err) {
+    output.classList.remove("translating");
+    output.innerText = "Unable to connect to server 😢";
+    console.error(err);
+  }
+}
+</script>
+</body>
+</html>
+ -->
+
+
+<!-- blue -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BLUVO 🌏✈️</title>
+
+<style>
+:root {
+  /* Blue gradient theme */
+  --bg: linear-gradient(135deg, #89f7fe, #66a6ff);
+  --card: linear-gradient(180deg, #f5fbff, #e6f2ff);
+  --accent: #2f80ed;
+  --accent-hover: #1c6dd0;
+  --text: #1f2933;
+  --muted: #5b6b7a;
+  --border: #cfe3ff;
+  --highlight: #eef6ff;
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Floating clouds */
+.cloud {
+  position: absolute;
+  top: 30px;
+  width: 90px;
+  height: 55px;
+  background: #ffffff;
+  border-radius: 50%;
+  opacity: 0.7;
+  animation: float 30s linear infinite;
+}
+.cloud:nth-child(2) {
+  width: 120px; height: 70px; top: 100px; animation-duration: 40s;
+}
+.cloud:nth-child(3) {
+  width: 80px; height: 45px; top: 180px; animation-duration: 35s;
+}
+
+@keyframes float {
+  0% { transform: translateX(-200px); }
+  100% { transform: translateX(110vw); }
+}
+
+.container {
+  position: relative;
+  width: 500px;
+  z-index: 1;
+}
+
+
+.card {
+  background: var(--card);
+  border-radius: 24px;
+  padding: 30px;
+  border: 1.5px solid var(--border);
+  box-shadow: 0 25px 60px rgba(47,128,237,0.25);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 35px 80px rgba(47,128,237,0.35);
+}
+
+h1 {
+  margin: 0;
+  font-weight: 800;
+  font-size: 28px;
+  color: var(--accent);
+}
+
+.subtitle {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 15px;
+  font-family: cursive;
+  color:#1c6dd0;
+}
+
+textarea {
+  width: 100%;
+  margin-top: 18px;
+  padding: 14px;
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  font-size: 15px;
+  font-family: cursive;
+  resize: none;
+  outline: none;
+  height: 70px;
+  box-sizing: border-box;
+  color:#194579;
+}
+
+textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(47,128,237,0.4);
+}
+
+select {
+  margin-top: 18px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: 2px solid var(--border);
+  font-size: 15px;
+  outline: none;
+  background: #fff;
+  font-family: cursive;
+  color: #204878;
+}
+
+select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(47,128,237,0.35);
+}
+
+button {
+  margin-top: 24px;
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #2f80ed, #56ccf2);
+  border: none;
+  border-radius: 16px;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  font-family:Georgia, 'Times New Roman', Times, serif;
+  font-size: 16px;
+  box-shadow: 0 12px 30px rgba(47,128,237,0.45);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 38px rgba(47,128,237,0.6);
+}
+
+button:active {
+  transform: scale(0.96);
+}
+
+#output {
+  margin-top: 20px;
+  padding: 18px;
+  border-radius: 16px;
+  background: var(--highlight);
+  border: 2px solid var(--border);
+  min-height: 70px;
+  font-size: 15px;
+  color: var(--text);
+  font-family: cursive;
+  color: #194787;
+}
+
+#output.translating {
+  background: #dbeafe;
+  color: #1c6dd0;
+  font-style: italic;
+}
+
+/* Emoji bounce */
+.card h1::after {
+  content: " ✈️";
+  display: inline-block;
+  animation: bounce 1.4s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.suggestions-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccc;
+  max-height: 150px;
+  overflow-y: auto;
+  background: white;
+  position: absolute;
+  width: 90%;
+  z-index: 10;
+  display: none;
+  border-radius: 5px;
+  font-family:cursive;
+  font-size: 13px;
+  color: #1c6dd0;
+}
+
+.suggestions-list li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.suggestions-list li:hover {
+  background-color: #f0f0f0;
+}
+</style>
+</head>
+<body>
+<div class="cloud"></div>
+<div class="cloud"></div>
+<div class="cloud"></div>
+
+<div class="container">
+  <div class="card">
+    <h1>BLUVO</h1>
+    <div class="subtitle">🔹Translate on the go 🩵</div>
+
+    <textarea id="inputText" placeholder="Write something to translate…"></textarea>
+
+    <!-- Suggestions dropdown -->
+    <ul id="suggestions" class="suggestions-list"></ul>
+
+    <select id="targetLang">
+      <option value="en">English</option>
+      <option value="hi">Hindi</option>
+      <option value="fr">French</option>
+    </select>
+
+    <button onclick="translateText()">Translate</button>
+
+    <div id="output">Your translated text will appear here ✨</div>
+  </div>
+</div>
+
+<script>
+const inputText = document.getElementById("inputText");
+const suggestionsList = document.getElementById("suggestions");
+const targetLang = document.getElementById("targetLang");
+
+// Travel questions in different languages
+const travelQuestions = {
+  en: [
+    "What are the best places to visit here?",
+    "How do I get to railway station?",
+    "Where is the beach?",
+    "What is the must try food here?",
+    "Travel tips for solo travelers?",
+    "Affordable hotels nearby?",
+    "Famous tourist spots?"
+  ],
+  hi: [
+    "यहाँ घूमने के लिए सबसे अच्छी जगहें कौन सी हैं?",
+    "मैं रेलवे स्टेशन तक कैसे पहुँचूँ?",
+    "समुद्र तट कहाँ है?",
+    "यहाँ कौन सा भोजन जरूर ट्राई करना चाहिए?",
+    "सोलो यात्रियों के लिए यात्रा सुझाव?",
+    "पास के किफायती होटल?",
+    "प्रसिद्ध पर्यटन स्थल?"
+  ],
+  fr: [
+    "Quels sont les meilleurs endroits à visiter ici?",
+    "Comment aller à la gare?",
+    "Où est la plage?",
+    "Quel est le plat à essayer ici?",
+    "Conseils de voyage pour les voyageurs seuls?",
+    "Hôtels abordables à proximité?",
+    "Sites touristiques célèbres?"
+  ]
+};
+
+// Function to get suggestions based on selected language
+function getSuggestions(lang) {
+  return travelQuestions[lang] || travelQuestions.en;
+}
+
+// Show suggestions when textarea is focused
+inputText.addEventListener("focus", () => {
+  const lang = targetLang.value;
+  const suggestions = getSuggestions(lang);
+  suggestionsList.innerHTML = "";
+
+  suggestions.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = item;
+    li.addEventListener("click", () => {
+      inputText.value = item; // Fill textarea with clicked suggestion
+      suggestionsList.innerHTML = ""; // Hide dropdown
+    });
+    suggestionsList.appendChild(li);
+  });
+
+  suggestionsList.style.display = "block";
+});
+
+// Update suggestions if language changes while textarea is focused
+targetLang.addEventListener("change", () => {
+  if (document.activeElement === inputText) {
+    inputText.dispatchEvent(new Event("focus")); // Refresh suggestions
+  }
+});
+
+// Hide suggestions when clicking outside
+document.addEventListener("click", (e) => {
+  if (!inputText.contains(e.target) && !suggestionsList.contains(e.target)) {
+    suggestionsList.style.display = "none";
+  }
+});
+
+// Translate function
+async function translateText() {
+  const text = inputText.value.trim();
+  const lang = targetLang.value;
+  const output = document.getElementById("output");
+
+  if (!text) {
+    output.innerText = "Please enter some text!";
+    return;
+  }
+
+  output.classList.add("translating");
+  output.innerText = "Translating… 🛫";
+
+  try {
+    const res = await fetch("http://127.0.0.1:8000/translate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, target_lang: lang })
+    });
+
+    const data = await res.json();
+    output.classList.remove("translating");
+    output.innerText = data.translated_text + " 🌟";
+  } catch (err) {
+    output.classList.remove("translating");
+    output.innerText = "Unable to connect to server 😢";
+    console.error(err);
+  }
+}
+</script>
+</body>
+</html>
